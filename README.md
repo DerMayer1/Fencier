@@ -135,6 +135,17 @@ Policy findings:
 - HIGH: Possible secret detected in added line
 ```
 
+Risk is represented as a small score band:
+
+```text
+score
+  0        25        50        75       100
+  |---------|---------|---------|---------|
+  LOW       MEDIUM              HIGH
+
+  clean diff        review needed        stop and fix
+```
+
 The verification flow is deliberately mechanical:
 
 ```text
