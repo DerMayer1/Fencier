@@ -6,7 +6,7 @@ Fencier is a local-first operating layer for Codex CLI. It prepares repository i
 
 ## Status
 
-Fencier is in early development. The current CLI can initialize a local policy file, install Codex CLI instructions, generate a Codex session brief, run deterministic verification against local git changes, and write local audit reports.
+Fencier is in early development. The current CLI can initialize a local policy file, install Codex CLI instructions, generate a Codex session brief, inspect prompt/checklist/skill templates, run deterministic verification against local git changes, and write local audit reports.
 
 ## Why Fencier Exists
 
@@ -29,6 +29,9 @@ The current CLI can:
 - evaluate changes against `fencier.yaml`
 - run `fencier verify` as the deterministic validation step
 - install `AGENTS.md` as the primary Codex repository contract
+- list and show Codex prompt templates
+- list and show Codex task checklists
+- list and show draft Codex skills
 - include untracked files in the default verification
 - detect blocked paths
 - detect sensitive paths
@@ -41,7 +44,8 @@ The current CLI can:
 
 Planned next:
 
-- deeper Codex CLI workflow integration
+- skill installation into Codex skill directories
+- richer Codex CLI workflow helpers
 - stronger risk scoring signals
 - reproducible local benchmarks
 
@@ -52,12 +56,14 @@ packages/
   core/   Policy engine and shared domain types
   cli/    Command-line interface
   adapters/ Codex-first agent instruction templates
+  codex-kit/ Versioned prompts, checklists, and skill drafts
 docs/     Product, architecture, policy, security, and adapter docs
 ```
 
 Key docs:
 
 - [Architecture](docs/architecture.md)
+- [Codex Kit](docs/codex-kit.md)
 - [Deterministic Verifier](docs/deterministic-verifier.md)
 - [Quality Bar](docs/quality-bar.md)
 - [Policy Model](docs/policy-model.md)
@@ -84,6 +90,10 @@ node packages/cli/dist/index.js audit list
 node packages/cli/dist/index.js audit show latest
 node packages/cli/dist/index.js codex install
 node packages/cli/dist/index.js codex brief
+node packages/cli/dist/index.js codex prompt list
+node packages/cli/dist/index.js codex prompt show implementation
+node packages/cli/dist/index.js codex checklist list
+node packages/cli/dist/index.js codex skill list
 node packages/cli/dist/index.js adapters list
 node packages/cli/dist/index.js adapters install codex
 ```
