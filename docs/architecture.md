@@ -10,6 +10,8 @@ The Phase 5 local skill installer materializes Codex Kit skill drafts under `.fe
 
 The Phase 6 workflow layer composes operational Codex runbooks from existing artifacts. It should not create new policy semantics; it checks setup status and prints deterministic session material.
 
+The Phase 7 release hardening layer keeps setup repeatable. Initialization should be safe to re-run, CI should validate the monorepo, and packaging should be testable before any registry publication.
+
 ## Package Boundaries
 
 ### `packages/core`
@@ -58,6 +60,7 @@ Rules:
 
 - keep business rules out of command handlers
 - convert local state into core input types
+- keep initialization idempotent unless `--force` is explicitly requested
 - never store full patches by default
 - never print or persist full secret values
 

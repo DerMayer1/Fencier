@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { listAdapters } from "@fencier/adapters";
 import {
@@ -9,17 +9,13 @@ import {
   listPrompts,
   listSkills,
 } from "@fencier/codex-kit";
-import {
-  createHealthCheck,
-  defaultPolicyYaml,
-  evaluatePolicy,
-  parsePolicyConfig,
-} from "@fencier/core";
+import { createHealthCheck, evaluatePolicy, parsePolicyConfig } from "@fencier/core";
 import { Command } from "commander";
 import { installAdapters, parseAdapterInstallSelection } from "./adapters";
 import { listAuditFiles, readLatestAuditMarkdown, writeAuditReports } from "./audit";
 import { createCodexBrief } from "./codex";
 import { collectGitDiff, getGitBranch, getGitCommit, isInsideGitRepo } from "./git";
+import { initializeFencier } from "./init";
 import { formatCheckResult } from "./output";
 import { getLocalSkillRoot, installSkills, parseSkillInstallSelection } from "./skills";
 import { createCodexPrepareReport, createCodexRunbook } from "./workflow";
@@ -73,36 +69,21 @@ export function createProgram(): Command {
           return;
         }
 
-        await mkdir(join(cwd, ".fencier", "audits"), { recursive: true });
+        const result = await initializeFencier({
+          cwd,
+          adapterSelection,
+          force: options.force,
+        });
 
-        const policyPath = join(cwd, "fencier.yaml");
-
-        try {
-          await writeFile(policyPath, defaultPolicyYaml, {
-            encoding: "utf8",
-            flag: options.force ? "w" : "wx",
-          });
-        } catch (error) {
-          if (isNodeError(error) && error.code === "EEXIST") {
-            console.error("fencier.yaml already exists. Re-run with --force to overwrite it.");
-            process.exitCode = 3;
-            return;
-          }
-
-          throw error;
-        }
-
-        console.log("Created fencier.yaml");
+        console.log(
+          result.policyCreated
+            ? "Created fencier.yaml"
+            : "fencier.yaml already exists. Keeping existing policy.",
+        );
         console.log("Created .fencier/audits");
 
-        if (adapterSelection) {
-          const result = await installAdapters({
-            cwd,
-            selection: adapterSelection,
-            force: options.force,
-          });
-
-          printAdapterInstallResult(result);
+        if (result.adapterResult) {
+          printInitAdapterResult(result.adapterResult);
         }
       },
     );
@@ -462,6 +443,18 @@ function printAdapterInstallResult(result: Awaited<ReturnType<typeof installAdap
   for (const adapter of result.installed) {
     console.log(`Installed ${adapter.id}: ${adapter.targetPath}`);
   }
+}
+
+function printInitAdapterResult(result: Awaited<ReturnType<typeof installAdapters>>): void {
+  if (result.conflicts.length > 0) {
+    for (const conflict of result.conflicts) {
+      console.log(`${conflict.targetPath} already exists. Keeping existing adapter.`);
+    }
+
+    return;
+  }
+
+  printAdapterInstallResult(result);
 }
 
 function printSkillInstallResult(result: Awaited<ReturnType<typeof installSkills>>): void {

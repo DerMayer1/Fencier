@@ -26,12 +26,15 @@ npx fencier codex brief
 npx fencier verify
 ```
 
+`fencier init --codex` is safe to re-run. If `fencier.yaml` already exists, Fencier keeps the existing policy instead of overwriting it unless `--force` is provided.
+
 The current CLI can:
 
 - read local git diffs
 - evaluate changes against `fencier.yaml`
 - run `fencier verify` as the deterministic validation step
 - install `AGENTS.md` as the primary Codex repository contract
+- re-run initialization without replacing an existing policy by default
 - check whether a repository is ready for a Fencier-governed Codex session
 - print Codex runbooks that combine brief, prompt, checklist, and completion commands
 - list and show Codex prompt templates
@@ -73,6 +76,7 @@ Key docs:
 - [Deterministic Verifier](docs/deterministic-verifier.md)
 - [Quality Bar](docs/quality-bar.md)
 - [Policy Model](docs/policy-model.md)
+- [Release](docs/release.md)
 - [Security](docs/security.md)
 
 ## Development
@@ -83,6 +87,7 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm run pack:cli
 ```
 
 After building locally:
