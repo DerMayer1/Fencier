@@ -17,6 +17,7 @@ Fencier prepares Codex CLI sessions with repository instructions and determinist
 - no telemetry by default
 - policy-as-code
 - Codex-first repository instructions
+- versioned prompt and checklist artifacts
 - prompts and skills before product UI
 - deterministic verification after agent work
 - human review still wins

@@ -39,3 +39,5 @@ Claude, Cursor, and Copilot files may mirror the same high-level rules, but they
 - UI surfaces
 
 Those belong to later phases.
+
+Phase 4 starts those later layers through the Codex Kit.
