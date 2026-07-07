@@ -4,6 +4,8 @@ Fencier is a local-first TypeScript monorepo. The architecture is intentionally 
 
 The Phase 2 engine is a deterministic verifier. It should validate Codex output after a session; it should not grow into the main product surface.
 
+The Phase 4 Codex Kit is the first prompt/skill layer. It should stay deterministic and versioned: list and show prompts, checklists, and skill drafts without calling a model.
+
 ## Package Boundaries
 
 ### `packages/core`
@@ -72,6 +74,25 @@ Rules:
 - no policy evaluation
 - no Git commands
 
+### `packages/codex-kit`
+
+The Codex Kit package owns versioned Codex workflow artifacts.
+
+Responsibilities:
+
+- prompt template catalog
+- task checklist catalog
+- draft Codex skill content
+- deterministic rendering helpers
+
+Rules:
+
+- no filesystem writes
+- no Git commands
+- no model calls
+- no CLI output
+- artifacts should be inspectable as plain text
+
 ## Phase 2 Verification Flow
 
 1. A coding agent changes files in a local repository.
@@ -93,9 +114,10 @@ Rules:
 1. `fencier init --codex` creates `fencier.yaml`, `.fencier/audits/`, and `AGENTS.md`.
 2. Codex CLI reads `AGENTS.md` as the local operating contract.
 3. `fencier codex brief` prints a deterministic session brief with setup status, required workflow, useful commands, and the latest audit when available.
-4. Codex CLI performs the requested code task.
-5. `fencier verify` evaluates the resulting diff.
-6. The final response should mention Fencier findings or confirm verification passed.
+4. `fencier codex prompt show <id>` or `fencier codex checklist show <id>` provides task-specific guidance.
+5. Codex CLI performs the requested code task.
+6. `fencier verify` evaluates the resulting diff.
+7. The final response should mention Fencier findings or confirm verification passed.
 
 ## Core Evaluation Order
 
@@ -141,5 +163,6 @@ Audit reports must not include:
 Current and future packages should preserve these boundaries:
 
 - `packages/adapters`: own Codex-first instruction templates, but do not write files or evaluate policy.
+- `packages/codex-kit`: own prompts, checklists, and skill drafts, but do not install files or inspect repos.
 - `packages/cli`: own Codex-oriented workflow commands, but do not duplicate policy logic.
 - `packages/benchmark`: run fixture scenarios against the core engine and CLI outputs.
