@@ -6,7 +6,7 @@ Fencier is a local-first operating layer for Codex CLI. It prepares repository i
 
 ## Status
 
-Fencier is in early development. The current CLI can initialize a local policy file, install Codex CLI instructions, generate a Codex session brief, inspect prompt/checklist/skill templates, install local skill drafts, run deterministic verification against local git changes, and write local audit reports.
+Fencier is in early development. The current CLI can initialize a local policy file, install Codex CLI instructions, generate Codex session briefs and runbooks, inspect prompt/checklist/skill templates, install local skill drafts, run deterministic verification against local git changes, and write local audit reports.
 
 ## Why Fencier Exists
 
@@ -19,6 +19,9 @@ Fencier does not try to make agents smarter. It prepares the working context, ke
 ```bash
 npx fencier init
 npx fencier init --codex
+npx fencier codex skill install all --force
+npx fencier codex prepare
+npx fencier codex runbook implementation
 npx fencier codex brief
 npx fencier verify
 ```
@@ -29,6 +32,8 @@ The current CLI can:
 - evaluate changes against `fencier.yaml`
 - run `fencier verify` as the deterministic validation step
 - install `AGENTS.md` as the primary Codex repository contract
+- check whether a repository is ready for a Fencier-governed Codex session
+- print Codex runbooks that combine brief, prompt, checklist, and completion commands
 - list and show Codex prompt templates
 - list and show Codex task checklists
 - list and show draft Codex skills
@@ -91,6 +96,9 @@ node packages/cli/dist/index.js audit list
 node packages/cli/dist/index.js audit show latest
 node packages/cli/dist/index.js codex install
 node packages/cli/dist/index.js codex brief
+node packages/cli/dist/index.js codex prepare
+node packages/cli/dist/index.js codex runbook implementation
+node packages/cli/dist/index.js codex fix-audit brief
 node packages/cli/dist/index.js codex prompt list
 node packages/cli/dist/index.js codex prompt show implementation
 node packages/cli/dist/index.js codex checklist list

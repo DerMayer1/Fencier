@@ -6,6 +6,8 @@ The kit is deterministic. It does not call a model, inspect the repository, or w
 
 Phase 5 keeps the kit pure and adds CLI-owned local skill installation. The installed files live under `.fencier/skills` so a repository can inspect exactly what Fencier generated before any future global Codex integration.
 
+Phase 6 adds operational runbooks. A runbook combines the repository brief, task prompt, checklist, and completion commands into one deterministic output for a Codex session.
+
 ## Commands
 
 List prompts:
@@ -62,6 +64,24 @@ Install or refresh every local skill draft:
 fencier codex skill install all --force
 ```
 
+Check whether the repository is ready for a Fencier-governed Codex session:
+
+```bash
+fencier codex prepare
+```
+
+Print a complete task runbook:
+
+```bash
+fencier codex runbook implementation
+```
+
+Print a runbook for fixing the latest audit:
+
+```bash
+fencier codex fix-audit brief
+```
+
 ## Prompt IDs
 
 - `implementation`
@@ -82,4 +102,6 @@ fencier codex skill install all --force
 
 The Codex Kit package owns artifact definitions only. The CLI owns installation into `.fencier/skills`.
 
-Installing directly into global Codex skill directories remains outside Phase 5.
+The CLI also owns runbook composition because runbooks read local repository state, the latest audit, and installed setup status.
+
+Installing directly into global Codex skill directories remains outside Phase 6.

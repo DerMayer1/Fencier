@@ -8,6 +8,8 @@ The Phase 4 Codex Kit is the first prompt/skill layer. It should stay determinis
 
 The Phase 5 local skill installer materializes Codex Kit skill drafts under `.fencier/skills`. The installer belongs in the CLI because it touches the filesystem; the Codex Kit remains the pure source of artifact content.
 
+The Phase 6 workflow layer composes operational Codex runbooks from existing artifacts. It should not create new policy semantics; it checks setup status and prints deterministic session material.
+
 ## Package Boundaries
 
 ### `packages/core`
@@ -50,6 +52,7 @@ Responsibilities:
 - compatibility adapter file installation
 - Codex CLI briefing output
 - local Codex skill draft installation into `.fencier/skills`
+- Codex readiness checks and runbook composition
 
 Rules:
 
@@ -116,9 +119,9 @@ Rules:
 
 1. `fencier init --codex` creates `fencier.yaml`, `.fencier/audits/`, and `AGENTS.md`.
 2. Codex CLI reads `AGENTS.md` as the local operating contract.
-3. `fencier codex brief` prints a deterministic session brief with setup status, required workflow, useful commands, and the latest audit when available.
-4. `fencier codex prompt show <id>` or `fencier codex checklist show <id>` provides task-specific guidance.
-5. `fencier codex skill install <id|all>` writes local `SKILL.md` files under `.fencier/skills` when repository-local skill material is needed.
+3. `fencier codex skill install <id|all>` writes local `SKILL.md` files under `.fencier/skills` when repository-local skill material is needed.
+4. `fencier codex prepare` checks policy, adapter, local skills, and latest audit status.
+5. `fencier codex runbook <prompt>` prints a deterministic session package with brief, prompt, checklist, and completion commands.
 6. Codex CLI performs the requested code task.
 7. `fencier verify` evaluates the resulting diff.
 8. The final response should mention Fencier findings or confirm verification passed.
@@ -168,5 +171,5 @@ Current and future packages should preserve these boundaries:
 
 - `packages/adapters`: own Codex-first instruction templates, but do not write files or evaluate policy.
 - `packages/codex-kit`: own prompts, checklists, and skill drafts, but do not install files or inspect repos.
-- `packages/cli`: own Codex-oriented workflow commands, but do not duplicate policy logic.
+- `packages/cli`: own Codex-oriented workflow commands and runbooks, but do not duplicate policy logic.
 - `packages/benchmark`: run fixture scenarios against the core engine and CLI outputs.

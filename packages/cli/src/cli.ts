@@ -22,6 +22,7 @@ import { createCodexBrief } from "./codex";
 import { collectGitDiff, getGitBranch, getGitCommit, isInsideGitRepo } from "./git";
 import { formatCheckResult } from "./output";
 import { getLocalSkillRoot, installSkills, parseSkillInstallSelection } from "./skills";
+import { createCodexPrepareReport, createCodexRunbook } from "./workflow";
 
 export function createProgram(): Command {
   const program = new Command();
@@ -184,6 +185,39 @@ export function createProgram(): Command {
       console.log(await createCodexBrief(process.cwd()));
     });
 
+  codex
+    .command("prepare")
+    .description("Check whether the repository is ready for a Fencier-governed Codex session")
+    .action(async () => {
+      console.log(await createCodexPrepareReport(process.cwd()));
+    });
+
+  codex
+    .command("runbook")
+    .argument("<prompt>", "Prompt id")
+    .description(
+      "Print a full Codex runbook with brief, prompt, checklist, and completion commands",
+    )
+    .action(async (prompt: string) => {
+      try {
+        console.log(await createCodexRunbook(process.cwd(), parsePromptId(prompt)));
+      } catch (error) {
+        console.error(error instanceof Error ? error.message : String(error));
+        process.exitCode = 3;
+      }
+    });
+
+  const codexFixAudit = codex
+    .command("fix-audit")
+    .description("Codex workflow for fixing audit findings");
+
+  codexFixAudit
+    .command("brief")
+    .description("Print a runbook for fixing the latest Fencier audit")
+    .action(async () => {
+      console.log(await createCodexRunbook(process.cwd(), "fix-audit"));
+    });
+
   const codexPrompt = codex.command("prompt").description("Inspect Codex prompt templates");
 
   codexPrompt
@@ -336,6 +370,21 @@ function resolveInitAdapterSelection(options: {
   }
 
   return parseAdapterInstallSelection(options.adapter as string);
+}
+
+function parsePromptId(value: string): Parameters<typeof createCodexRunbook>[1] {
+  if (
+    value === "implementation" ||
+    value === "bugfix" ||
+    value === "review" ||
+    value === "refactor" ||
+    value === "security" ||
+    value === "fix-audit"
+  ) {
+    return value;
+  }
+
+  throw new Error(`Unknown prompt: ${value}`);
 }
 
 async function runVerification(options: {

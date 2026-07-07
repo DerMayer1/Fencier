@@ -27,7 +27,16 @@ describe("createProgram", () => {
     const codex = program.commands.find((command) => command.name() === "codex");
 
     expect(codex?.commands.map((command) => command.name())).toEqual(
-      expect.arrayContaining(["brief", "install", "prompt", "checklist", "skill"]),
+      expect.arrayContaining([
+        "brief",
+        "install",
+        "prepare",
+        "runbook",
+        "fix-audit",
+        "prompt",
+        "checklist",
+        "skill",
+      ]),
     );
   });
 
