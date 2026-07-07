@@ -1,0 +1,22 @@
+{
+  "name": "@fencier/cli",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "fencier": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@fencier/adapters": "workspace:*",
+    "@fencier/core": "workspace:*",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}

@@ -1,0 +1,93 @@
+# Fencier
+
+Keep AI coding agents inside the task.
+
+Fencier is a local-first operating layer for Codex CLI. It prepares repository instructions, generates deterministic session context, and verifies Codex-produced diffs before they land. The verification layer detects scope drift, sensitive file changes, secret-like patterns, missing test updates, and other risk signals while keeping source code on the developer's machine.
+
+## Status
+
+Fencier is in early development. The current CLI can initialize a local policy file, install Codex CLI instructions, generate a Codex session brief, run deterministic verification against local git changes, and write local audit reports.
+
+## Why Fencier Exists
+
+AI coding agents are fast, but they drift. They touch unrelated files, expand scope, refactor opportunistically, and sometimes change sensitive areas without enough review context.
+
+Fencier does not try to make agents smarter. It prepares the working context, keeps the session inside explicit boundaries, and verifies the work agents produce.
+
+## Planned Workflow
+
+```bash
+npx fencier init
+npx fencier init --codex
+npx fencier codex brief
+npx fencier verify
+```
+
+The current CLI can:
+
+- read local git diffs
+- evaluate changes against `fencier.yaml`
+- run `fencier verify` as the deterministic validation step
+- install `AGENTS.md` as the primary Codex repository contract
+- include untracked files in the default verification
+- detect blocked paths
+- detect sensitive paths
+- detect possible secrets in added lines
+- require tests for critical paths
+- calculate a transparent risk score
+- write Markdown and JSON audit reports
+- warn when changes fall outside allowed paths
+- warn when file or line limits are exceeded
+
+Planned next:
+
+- deeper Codex CLI workflow integration
+- stronger risk scoring signals
+- reproducible local benchmarks
+
+## Repository Structure
+
+```txt
+packages/
+  core/   Policy engine and shared domain types
+  cli/    Command-line interface
+  adapters/ Codex-first agent instruction templates
+docs/     Product, architecture, policy, security, and adapter docs
+```
+
+Key docs:
+
+- [Architecture](docs/architecture.md)
+- [Deterministic Verifier](docs/deterministic-verifier.md)
+- [Quality Bar](docs/quality-bar.md)
+- [Policy Model](docs/policy-model.md)
+- [Security](docs/security.md)
+
+## Development
+
+```bash
+pnpm install
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+After building locally:
+
+```bash
+node packages/cli/dist/index.js init
+node packages/cli/dist/index.js init --codex
+node packages/cli/dist/index.js verify
+node packages/cli/dist/index.js check
+node packages/cli/dist/index.js audit list
+node packages/cli/dist/index.js audit show latest
+node packages/cli/dist/index.js codex install
+node packages/cli/dist/index.js codex brief
+node packages/cli/dist/index.js adapters list
+node packages/cli/dist/index.js adapters install codex
+```
+
+## License
+
+MIT

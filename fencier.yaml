@@ -1,0 +1,46 @@
+version: 1
+
+scope:
+  allowed_paths:
+    - fencier.yaml
+    - src/**
+    - packages/**
+    - apps/**
+    - tests/**
+    - docs/**
+  blocked_paths:
+    - .env
+    - .env.*
+    - secrets/**
+  sensitive_paths:
+    - src/auth/**
+    - src/billing/**
+    - src/payments/**
+    - .github/workflows/**
+    - infra/**
+    - migrations/**
+  ignored_paths:
+    - dist/**
+    - build/**
+    - coverage/**
+    - node_modules/**
+
+rules:
+  max_files_changed: 8
+  max_lines_changed: 500
+  block_secret_patterns: true
+  require_tests_for:
+    - src/auth/**
+    - src/billing/**
+    - src/payments/**
+
+audit:
+  write_markdown: true
+  write_json: true
+  include_patch: false
+
+adapters:
+  codex: true
+  claude: false
+  cursor: false
+  copilot: false
