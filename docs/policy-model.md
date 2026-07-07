@@ -17,6 +17,8 @@ version: 1
 
 scope:
   allowed_paths:
+    - README.md
+    - package.json
     - src/**
     - tests/**
   blocked_paths:

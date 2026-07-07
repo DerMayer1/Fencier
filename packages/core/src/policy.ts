@@ -46,7 +46,18 @@ export const defaultPolicyYaml = `version: 1
 
 scope:
   allowed_paths:
+    - .github/workflows/**
+    - .gitignore
+    - AGENTS.md
+    - LICENSE
+    - README.md
+    - biome.json
     - fencier.yaml
+    - package.json
+    - pnpm-lock.yaml
+    - pnpm-workspace.yaml
+    - tsconfig.base.json
+    - vitest.config.ts
     - src/**
     - packages/**
     - apps/**
