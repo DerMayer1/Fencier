@@ -11,6 +11,8 @@ Fencier is a local-first operating layer for Codex CLI. It prepares repository i
 
 It does not replace Codex. It gives Codex rails.
 
+![Fencier Codex workflow](docs/assets/readme/fencier-flow.svg)
+
 ## The Problem
 
 AI coding agents are fast, but they drift.
@@ -95,6 +97,8 @@ fencier verify
 Fencier does not prove code is correct. It proves the agent's diff was checked against explicit local boundaries.
 
 ## Example Output
+
+![Fencier verification dashboard](docs/assets/readme/verification-dashboard.svg)
 
 ```text
 Fencier Verification
@@ -211,6 +215,8 @@ The verifier currently checks:
 - critical paths changed without matching tests
 
 ## Architecture
+
+![Fencier package architecture](docs/assets/readme/architecture.svg)
 
 Fencier is a TypeScript monorepo.
 
