@@ -21,6 +21,7 @@ import { listAuditFiles, readLatestAuditMarkdown, writeAuditReports } from "./au
 import { createCodexBrief } from "./codex";
 import { collectGitDiff, getGitBranch, getGitCommit, isInsideGitRepo } from "./git";
 import { formatCheckResult } from "./output";
+import { getLocalSkillRoot, installSkills, parseSkillInstallSelection } from "./skills";
 
 export function createProgram(): Command {
   const program = new Command();
@@ -217,13 +218,45 @@ export function createProgram(): Command {
       printKitItem(() => getChecklist(id));
     });
 
-  const codexSkill = codex.command("skill").description("Inspect Codex skill drafts");
+  const codexSkill = codex.command("skill").description("Manage Codex skill drafts");
 
   codexSkill
     .command("list")
     .description("List available Codex skill drafts")
     .action(() => {
       printKitList(listSkills());
+    });
+
+  codexSkill
+    .command("path")
+    .description("Print the local Fencier skill installation directory")
+    .action(() => {
+      console.log(getLocalSkillRoot(process.cwd()));
+    });
+
+  codexSkill
+    .command("install")
+    .argument("<skill>", "Skill id or 'all'")
+    .option("--force", "Overwrite existing local skill files")
+    .description("Install Codex skill drafts into .fencier/skills")
+    .action(async (skill: string, options: { force?: boolean }) => {
+      let selection: ReturnType<typeof parseSkillInstallSelection>;
+
+      try {
+        selection = parseSkillInstallSelection(skill);
+      } catch (error) {
+        console.error(error instanceof Error ? error.message : String(error));
+        process.exitCode = 3;
+        return;
+      }
+
+      const result = await installSkills({
+        cwd: process.cwd(),
+        selection,
+        force: options.force,
+      });
+
+      printSkillInstallResult(result);
     });
 
   codexSkill
@@ -379,6 +412,23 @@ function printAdapterInstallResult(result: Awaited<ReturnType<typeof installAdap
 
   for (const adapter of result.installed) {
     console.log(`Installed ${adapter.id}: ${adapter.targetPath}`);
+  }
+}
+
+function printSkillInstallResult(result: Awaited<ReturnType<typeof installSkills>>): void {
+  if (result.conflicts.length > 0) {
+    console.error("Skill files already exist. Re-run with --force to overwrite:");
+
+    for (const conflict of result.conflicts) {
+      console.error(`- ${conflict.targetPath}`);
+    }
+
+    process.exitCode = 3;
+    return;
+  }
+
+  for (const skill of result.installed) {
+    console.log(`Installed ${skill.id}: ${skill.targetPath}`);
   }
 }
 

@@ -6,7 +6,7 @@ Fencier is a local-first operating layer for Codex CLI. It prepares repository i
 
 ## Status
 
-Fencier is in early development. The current CLI can initialize a local policy file, install Codex CLI instructions, generate a Codex session brief, inspect prompt/checklist/skill templates, run deterministic verification against local git changes, and write local audit reports.
+Fencier is in early development. The current CLI can initialize a local policy file, install Codex CLI instructions, generate a Codex session brief, inspect prompt/checklist/skill templates, install local skill drafts, run deterministic verification against local git changes, and write local audit reports.
 
 ## Why Fencier Exists
 
@@ -32,6 +32,7 @@ The current CLI can:
 - list and show Codex prompt templates
 - list and show Codex task checklists
 - list and show draft Codex skills
+- install draft Codex skills into `.fencier/skills`
 - include untracked files in the default verification
 - detect blocked paths
 - detect sensitive paths
@@ -44,7 +45,7 @@ The current CLI can:
 
 Planned next:
 
-- skill installation into Codex skill directories
+- installation into global Codex skill directories
 - richer Codex CLI workflow helpers
 - stronger risk scoring signals
 - reproducible local benchmarks
@@ -94,6 +95,9 @@ node packages/cli/dist/index.js codex prompt list
 node packages/cli/dist/index.js codex prompt show implementation
 node packages/cli/dist/index.js codex checklist list
 node packages/cli/dist/index.js codex skill list
+node packages/cli/dist/index.js codex skill path
+node packages/cli/dist/index.js codex skill install fencier-scope-control
+node packages/cli/dist/index.js codex skill install all --force
 node packages/cli/dist/index.js adapters list
 node packages/cli/dist/index.js adapters install codex
 ```

@@ -1,8 +1,10 @@
 # Codex Kit
 
-Phase 4 introduces the Codex Kit: versioned prompts, checklists, and skill drafts for Codex CLI workflows.
+Phase 4 introduced the Codex Kit: versioned prompts, checklists, and skill drafts for Codex CLI workflows.
 
 The kit is deterministic. It does not call a model, inspect the repository, or write files. It provides inspectable text artifacts that the CLI can print.
+
+Phase 5 keeps the kit pure and adds CLI-owned local skill installation. The installed files live under `.fencier/skills` so a repository can inspect exactly what Fencier generated before any future global Codex integration.
 
 ## Commands
 
@@ -42,6 +44,24 @@ Show a skill draft:
 fencier codex skill show fencier-scope-control
 ```
 
+Print the local skill installation directory:
+
+```bash
+fencier codex skill path
+```
+
+Install one skill draft locally:
+
+```bash
+fencier codex skill install fencier-scope-control
+```
+
+Install or refresh every local skill draft:
+
+```bash
+fencier codex skill install all --force
+```
+
 ## Prompt IDs
 
 - `implementation`
@@ -60,4 +80,6 @@ fencier codex skill show fencier-scope-control
 
 ## Phase Boundary
 
-Phase 4 only creates and exposes the kit. Installing skills into Codex skill directories belongs to a later phase.
+The Codex Kit package owns artifact definitions only. The CLI owns installation into `.fencier/skills`.
+
+Installing directly into global Codex skill directories remains outside Phase 5.

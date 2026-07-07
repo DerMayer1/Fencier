@@ -6,6 +6,8 @@ The Phase 2 engine is a deterministic verifier. It should validate Codex output 
 
 The Phase 4 Codex Kit is the first prompt/skill layer. It should stay deterministic and versioned: list and show prompts, checklists, and skill drafts without calling a model.
 
+The Phase 5 local skill installer materializes Codex Kit skill drafts under `.fencier/skills`. The installer belongs in the CLI because it touches the filesystem; the Codex Kit remains the pure source of artifact content.
+
 ## Package Boundaries
 
 ### `packages/core`
@@ -47,6 +49,7 @@ Responsibilities:
 - Codex `AGENTS.md` installation
 - compatibility adapter file installation
 - Codex CLI briefing output
+- local Codex skill draft installation into `.fencier/skills`
 
 Rules:
 
@@ -115,9 +118,10 @@ Rules:
 2. Codex CLI reads `AGENTS.md` as the local operating contract.
 3. `fencier codex brief` prints a deterministic session brief with setup status, required workflow, useful commands, and the latest audit when available.
 4. `fencier codex prompt show <id>` or `fencier codex checklist show <id>` provides task-specific guidance.
-5. Codex CLI performs the requested code task.
-6. `fencier verify` evaluates the resulting diff.
-7. The final response should mention Fencier findings or confirm verification passed.
+5. `fencier codex skill install <id|all>` writes local `SKILL.md` files under `.fencier/skills` when repository-local skill material is needed.
+6. Codex CLI performs the requested code task.
+7. `fencier verify` evaluates the resulting diff.
+8. The final response should mention Fencier findings or confirm verification passed.
 
 ## Core Evaluation Order
 

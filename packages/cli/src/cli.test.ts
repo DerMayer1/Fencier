@@ -30,4 +30,14 @@ describe("createProgram", () => {
       expect.arrayContaining(["brief", "install", "prompt", "checklist", "skill"]),
     );
   });
+
+  it("exposes local Codex skill installation commands", () => {
+    const program = createProgram();
+    const codex = program.commands.find((command) => command.name() === "codex");
+    const skill = codex?.commands.find((command) => command.name() === "skill");
+
+    expect(skill?.commands.map((command) => command.name())).toEqual(
+      expect.arrayContaining(["list", "show", "path", "install"]),
+    );
+  });
 });
