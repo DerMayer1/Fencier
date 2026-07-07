@@ -21,4 +21,13 @@ describe("createProgram", () => {
 
     expect(init?.options.map((option) => option.long)).toContain("--codex");
   });
+
+  it("exposes Codex Kit commands", () => {
+    const program = createProgram();
+    const codex = program.commands.find((command) => command.name() === "codex");
+
+    expect(codex?.commands.map((command) => command.name())).toEqual(
+      expect.arrayContaining(["brief", "install", "prompt", "checklist", "skill"]),
+    );
+  });
 });
