@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fencier/adapters": "workspace:*",
+    "@fencier/codex-kit": "workspace:*",
     "@fencier/core": "workspace:*",
     "commander": "^12.1.0"
   },
