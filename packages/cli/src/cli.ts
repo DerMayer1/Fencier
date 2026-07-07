@@ -2,6 +2,14 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { listAdapters } from "@fencier/adapters";
 import {
+  getChecklist,
+  getPrompt,
+  getSkill,
+  listChecklists,
+  listPrompts,
+  listSkills,
+} from "@fencier/codex-kit";
+import {
   createHealthCheck,
   defaultPolicyYaml,
   evaluatePolicy,
@@ -175,6 +183,57 @@ export function createProgram(): Command {
       console.log(await createCodexBrief(process.cwd()));
     });
 
+  const codexPrompt = codex.command("prompt").description("Inspect Codex prompt templates");
+
+  codexPrompt
+    .command("list")
+    .description("List available Codex prompt templates")
+    .action(() => {
+      printKitList(listPrompts());
+    });
+
+  codexPrompt
+    .command("show")
+    .argument("<id>", "Prompt id")
+    .description("Show a Codex prompt template")
+    .action((id: string) => {
+      printKitItem(() => getPrompt(id));
+    });
+
+  const codexChecklist = codex.command("checklist").description("Inspect Codex task checklists");
+
+  codexChecklist
+    .command("list")
+    .description("List available Codex checklists")
+    .action(() => {
+      printKitList(listChecklists());
+    });
+
+  codexChecklist
+    .command("show")
+    .argument("<id>", "Checklist id")
+    .description("Show a Codex checklist")
+    .action((id: string) => {
+      printKitItem(() => getChecklist(id));
+    });
+
+  const codexSkill = codex.command("skill").description("Inspect Codex skill drafts");
+
+  codexSkill
+    .command("list")
+    .description("List available Codex skill drafts")
+    .action(() => {
+      printKitList(listSkills());
+    });
+
+  codexSkill
+    .command("show")
+    .argument("<id>", "Skill id")
+    .description("Show a Codex skill draft")
+    .action((id: string) => {
+      printKitItem(() => getSkill(id));
+    });
+
   const adapters = program.command("adapters").description("Manage agent adapter files");
 
   adapters
@@ -320,5 +379,30 @@ function printAdapterInstallResult(result: Awaited<ReturnType<typeof installAdap
 
   for (const adapter of result.installed) {
     console.log(`Installed ${adapter.id}: ${adapter.targetPath}`);
+  }
+}
+
+function printKitList(
+  items: Array<{
+    id: string;
+    title: string;
+    description: string;
+  }>,
+): void {
+  for (const item of items) {
+    console.log(`${item.id}\t${item.title}\t${item.description}`);
+  }
+}
+
+function printKitItem(
+  getItem: () => {
+    content: string;
+  },
+): void {
+  try {
+    console.log(getItem().content);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 3;
   }
 }
