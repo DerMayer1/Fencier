@@ -16,6 +16,7 @@
     "noUncheckedIndexedAccess": true,
     "paths": {
       "@fencier/adapters": ["packages/adapters/src/index.ts"],
+      "@fencier/codex-kit": ["packages/codex-kit/src/index.ts"],
       "@fencier/core": ["packages/core/src/index.ts"]
     },
     "resolveJsonModule": true,
