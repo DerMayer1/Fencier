@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createHealthCheck,
+  defaultPolicyYaml,
   deriveRiskLevel,
   evaluatePolicy,
   maskSecretLine,
@@ -24,6 +25,25 @@ describe("parsePolicyConfig", () => {
     expect(policy.version).toBe(1);
     expect(policy.rules.max_files_changed).toBe(8);
     expect(policy.audit.include_patch).toBe(false);
+  });
+
+  it("ignores fencier audit output in the default policy", () => {
+    const policy = parsePolicyConfig(defaultPolicyYaml);
+
+    const result = evaluatePolicy({
+      policy,
+      files: [
+        {
+          path: ".fencier/audits/2026-01-01T00-00-00-000Z.md",
+          status: "added",
+          additions: 40,
+          deletions: 0,
+        },
+      ],
+    });
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toEqual([]);
   });
 });
 

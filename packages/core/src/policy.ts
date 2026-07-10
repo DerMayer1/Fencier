@@ -75,6 +75,7 @@ scope:
     - infra/**
     - migrations/**
   ignored_paths:
+    - .fencier/**
     - dist/**
     - build/**
     - coverage/**
