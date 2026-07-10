@@ -1,240 +1,161 @@
 # Fencier
 
-Keep Codex inside the task.
+<div align="center">
+
+**Keep Codex inside the task.**
+
+A local-first boundary layer that prepares governed Codex sessions and verifies the resulting Git diff against explicit repository policy.
 
 [![CI](https://github.com/DerMayer1/Fencier/actions/workflows/ci.yml/badge.svg)](https://github.com/DerMayer1/Fencier/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22-339933.svg)](package.json)
 [![pnpm](https://img.shields.io/badge/pnpm-11.7.0-F69220.svg)](package.json)
+[![Local first](https://img.shields.io/badge/runtime-local--first-6C63FF.svg)](docs/security.md)
 
-Fencier is a local-first operating layer for Codex CLI. It prepares repository instructions, generates deterministic Codex runbooks, installs local skills, and verifies the resulting git diff before work lands.
+</div>
 
-It does not replace Codex. It gives Codex rails.
+---
 
-```text
-fencier init --codex
-        |
-        v
-fencier codex runbook implementation
-        |
-        v
-Codex edits the repository
-        |
-        v
-fencier verify
-        |
-        v
-PASS / WARN / FAIL + local audit report
+Fencier gives AI-assisted development a deterministic operating boundary. Before a Codex session, it installs repository instructions, local skills, prompts, checklists, and runbooks. After the session, it evaluates the local Git diff for scope drift, sensitive changes, possible secrets, missing tests, and oversized patches.
+
+Fencier does not replace Codex, code review, or security tooling. It makes the contract around an agent's work explicit, inspectable, and difficult to ignore.
+
+> [!IMPORTANT]
+> Fencier is currently a development preview and is not published to npm. Use the local development workflow below.
+
+## See it in action
+
+<table>
+  <tr>
+    <td width="50%"><strong>Prepare a governed session</strong></td>
+    <td width="50%"><strong>Verify the resulting diff</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/assets/fencier-prepare.svg" alt="Fencier Codex prepare reporting a ready repository" width="100%"></td>
+    <td><img src="docs/assets/fencier-verify.svg" alt="Fencier verification reporting a passing diff" width="100%"></td>
+  </tr>
+</table>
+
+## Why Fencier
+
+Coding agents are effective at implementation, but the surrounding contract often exists only in a prompt. That contract can be forgotten as context grows or the task expands.
+
+Fencier moves the contract into the repository:
+
+| Concern | Repository control | Fencier behavior |
+|---|---|---|
+| Scope drift | `allowed_paths`, change limits | Warns when the diff leaves the intended boundary |
+| Dangerous files | `blocked_paths` | Fails verification when a blocked path changes |
+| High-review areas | `sensitive_paths` | Makes security, billing, CI, and infrastructure changes explicit |
+| Secret exposure | `block_secret_patterns` | Scans added lines and reports masked previews only |
+| Critical changes without tests | `require_tests_for` | Warns when protected paths change without a test file in the diff |
+| Agent instructions | `AGENTS.md` | Installs a repository-level operating contract for Codex |
+| Review evidence | `.fencier/audits/` | Writes local Markdown and JSON reports without storing full patches by default |
+
+The result is a small control loop around the agent, not another agent:
+
+```mermaid
+flowchart LR
+    U["Engineer defines the task"] --> P["Fencier prepares context"]
+    P --> C["Codex changes the repository"]
+    C --> V["Fencier verifies the Git diff"]
+    V -->|PASS| R["Human review"]
+    V -->|WARN| R
+    V -->|FAIL| F["Fix policy findings"]
+    F --> V
+    R --> M["Commit or merge"]
 ```
 
-## The Problem
+## Quick start
 
-AI coding agents are fast, but they drift.
+### 1. Build and link the development CLI
 
-You ask for a focused change. The agent touches unrelated files, expands scope, refactors nearby code, edits sensitive paths, or forgets to run the project checks.
+Requirements: Node.js 22 or newer, pnpm 11.7.0, and Git.
 
-Fencier makes that behavior visible and harder to ship unnoticed.
+```bash
+git clone https://github.com/DerMayer1/Fencier.git
+cd Fencier
+pnpm install
+pnpm run ci
 
-## What It Does
+cd packages/cli
+npm link
+```
 
-Fencier gives a repository four things:
+Confirm that the command is available:
 
-1. A policy file: `fencier.yaml`
-2. A Codex operating contract: `AGENTS.md`
-3. Prompt, checklist, and skill material for Codex sessions
-4. A deterministic verifier for the local git diff
+```bash
+fencier doctor
+```
 
-The current CLI can:
+### 2. Initialize a target repository
 
-- initialize a Fencier-governed repository
-- install `AGENTS.md` for Codex CLI
-- install local Codex skills under `.fencier/skills`
-- print Codex runbooks for implementation, bugfix, review, refactor, security, and audit-fix tasks
-- check whether the repository is ready for a governed Codex session
-- verify changed files against `fencier.yaml`
-- detect blocked paths, sensitive paths, possible secrets, missing tests for critical paths, oversized diffs, and files outside scope
-- write local Markdown and JSON audit reports
-
-## Quick Start
-
-From a git repository:
+Run these commands from the root of the Git repository you want Fencier to govern:
 
 ```bash
 fencier init --codex
-fencier codex skill install all --force
+fencier codex skill install all
 fencier codex prepare
+```
+
+Initialization creates or installs:
+
+```text
+your-repository/
+├── AGENTS.md                  # Codex operating contract
+├── fencier.yaml              # deterministic policy
+└── .fencier/
+    ├── audits/               # local verification reports
+    └── skills/               # repository-local Codex skill material
+```
+
+Initialization is idempotent. Existing `fencier.yaml` and `AGENTS.md` files are preserved unless `--force` is explicitly supplied.
+
+### 3. Start a Codex task with a runbook
+
+```bash
 fencier codex runbook implementation
 ```
 
-Then let Codex do the requested work.
+Available runbooks cover `implementation`, `bugfix`, `review`, `refactor`, `security`, and `fix-audit`. A runbook composes the repository brief, task prompt, checklist, latest audit context, and completion commands into one deterministic session package.
 
-Before finishing:
+### 4. Verify before committing
 
 ```bash
 fencier verify
 fencier audit show latest
 ```
 
-If the repository is already initialized, `fencier init --codex` is safe to re-run. It keeps the existing `fencier.yaml` and `AGENTS.md` unless `--force` is provided.
-
-## How It Works
-
-Before a Codex session:
-
-```text
-fencier init --codex
-  -> creates fencier.yaml
-  -> creates .fencier/audits/
-  -> installs AGENTS.md
-
-fencier codex skill install all --force
-  -> writes .fencier/skills/<skill>/SKILL.md
-
-fencier codex prepare
-  -> checks policy, AGENTS.md, local skills, and latest audit status
-
-fencier codex runbook implementation
-  -> prints repo brief + prompt + checklist + completion commands
-```
-
-After a Codex session:
-
-```text
-fencier verify
-  -> reads fencier.yaml
-  -> collects the local git diff
-  -> evaluates deterministic policy rules
-  -> prints PASS, WARN, or FAIL
-  -> writes an audit report unless --no-audit is used
-```
-
-Fencier does not prove code is correct. It proves the agent's diff was checked against explicit local boundaries.
-
-## Example Output
-
-```text
-Fencier Verification
-
-Status: PASS
-Risk: LOW
-Score: 0
-
-Changed files: 0
-Changed lines: +0 / -0
-
-Policy findings:
-- None
-```
-
-When a diff violates policy, findings are explicit:
-
-```text
-Policy findings:
-- HIGH: Sensitive path changed: .github/workflows/ci.yml
-- MEDIUM: Changed files exceed max_files_changed: 12 > 8
-- HIGH: Possible secret detected in added line
-```
-
-Risk is represented as a small score band:
-
-```text
-score
-  0        25        50        75       100
-  |---------|---------|---------|---------|
-  LOW       MEDIUM              HIGH
-
-  clean diff        review needed        stop and fix
-```
-
-The verification flow is deliberately mechanical:
-
-```text
-git diff
-   |
-   v
-changed files + changed lines + added lines
-   |
-   v
-fencier.yaml policy
-   |
-   v
-scope checks + sensitive path checks + secret checks + test checks
-   |
-   v
-status + risk + score + audit
-```
-
-## Commands
-
-### Repository Setup
+Use `--staged` to inspect only staged changes or `--base <ref>` to compare against a specific Git reference:
 
 ```bash
-fencier init
-fencier init --codex
-fencier codex install
+fencier verify --staged
+fencier verify --base origin/main
 ```
 
-### Codex Workflow
+## Policy as code
 
-```bash
-fencier codex brief
-fencier codex prepare
-fencier codex runbook implementation
-fencier codex fix-audit brief
-```
-
-### Prompts, Checklists, and Skills
-
-```bash
-fencier codex prompt list
-fencier codex prompt show implementation
-
-fencier codex checklist list
-fencier codex checklist show security
-
-fencier codex skill list
-fencier codex skill show fencier-scope-control
-fencier codex skill path
-fencier codex skill install all --force
-```
-
-### Verification and Audits
-
-```bash
-fencier verify
-fencier verify --no-audit
-fencier check
-fencier audit list
-fencier audit show latest
-```
-
-### Adapters
-
-```bash
-fencier adapters list
-fencier adapters install codex
-fencier adapters install all
-```
-
-## Policy Model
-
-Fencier reads `fencier.yaml` from the repository root.
+Every governed repository owns its boundary in `fencier.yaml`:
 
 ```yaml
 version: 1
 
 scope:
   allowed_paths:
-    - packages/**
-    - docs/**
+    - src/**
+    - tests/**
+    - package.json
   blocked_paths:
     - .env
     - .env.*
     - secrets/**
   sensitive_paths:
-    - .github/workflows/**
     - src/auth/**
     - src/payments/**
+    - .github/workflows/**
+  ignored_paths:
+    - dist/**
+    - coverage/**
 
 rules:
   max_files_changed: 8
@@ -243,44 +164,143 @@ rules:
   require_tests_for:
     - src/auth/**
     - src/payments/**
+
+audit:
+  write_markdown: true
+  write_json: true
+  include_patch: false
+
+adapters:
+  codex: true
+  claude: false
+  cursor: false
+  copilot: false
 ```
 
-The verifier currently checks:
+Path patterns use glob syntax. Ignored paths are removed before the diff summary and policy rules are evaluated.
 
-- changed file count
-- changed line count
-- blocked paths
-- files outside allowed paths
-- sensitive paths
-- possible secret-like values in added lines
-- critical paths changed without matching tests
+## Deterministic verification
+
+`fencier verify` collects the working tree through Git, converts it into typed diff data, and passes that data to the pure policy engine. The evaluator applies rules in a stable order and returns structured findings.
+
+```mermaid
+flowchart TD
+    G["Git working tree"] --> D["numstat + name status + added lines"]
+    Y["fencier.yaml"] --> S["Validated policy schema"]
+    D --> E["Pure policy evaluator"]
+    S --> E
+    E --> O["Status, risk score, findings, diff summary"]
+    O --> T["Terminal output"]
+    O --> A["Local Markdown and JSON audits"]
+```
+
+### Findings and risk weights
+
+| Signal | Severity | Score |
+|---|---:|---:|
+| Blocked path changed | Critical | 50 |
+| Possible secret detected | Critical | 50 |
+| Sensitive path changed | High | 25 |
+| Protected path changed without tests | High | 25 |
+| File-count limit exceeded | Medium | 15 |
+| Line-count limit exceeded | Medium | 15 |
+| File outside allowed paths | Medium | 15 |
+
+Scores are additive and capped at 100:
+
+| Score | Risk |
+|---:|---|
+| `0–19` | Low |
+| `20–49` | Medium |
+| `50–89` | High |
+| `90–100` | Critical |
+
+Verification status and risk are related but distinct:
+
+- `PASS`: no policy findings.
+- `WARN`: one or more non-critical findings require review.
+- `FAIL`: at least one critical finding blocks the workflow.
+
+Stable process exit codes make the verifier suitable for scripts and CI:
+
+| Exit code | Meaning |
+|---:|---|
+| `0` | Verification passed or produced warnings |
+| `1` | Verification failed |
+| `3` | Configuration, environment, or command usage error |
 
 ## Architecture
 
-Fencier is a TypeScript monorepo.
+Fencier is a TypeScript monorepo with strict package boundaries:
 
-```text
-                 +----------------------+
-                 |      @fencier/cli    |
-                 | commands + git + I/O |
-                 +----------+-----------+
-                            |
-        +-------------------+-------------------+
-        |                   |                   |
-        v                   v                   v
-+---------------+   +---------------+   +--------------------+
-| @fencier/core |   | adapters      |   | codex-kit          |
-| policy engine |   | AGENTS.md     |   | prompts + skills   |
-| pure logic    |   | templates     |   | checklists         |
-+---------------+   +---------------+   +--------------------+
+```mermaid
+flowchart TB
+    CLI["@fencier/cli<br/>commands, Git, filesystem, output"]
+    CORE["@fencier/core<br/>policy schema, evaluation, risk"]
+    ADAPTERS["@fencier/adapters<br/>agent instruction templates"]
+    KIT["@fencier/codex-kit<br/>prompts, checklists, skills"]
+
+    CLI --> CORE
+    CLI --> ADAPTERS
+    CLI --> KIT
+
+    style CORE fill:#161b22,stroke:#58a6ff,color:#f0f6fc
+    style CLI fill:#161b22,stroke:#a371f7,color:#f0f6fc
+    style ADAPTERS fill:#161b22,stroke:#3fb950,color:#f0f6fc
+    style KIT fill:#161b22,stroke:#d29922,color:#f0f6fc
 ```
 
-The boundary is intentional:
+| Package | Owns | Must not own |
+|---|---|---|
+| `@fencier/core` | Policy schema, diff types, secret heuristics, findings, risk scoring | Filesystem, Git, terminal output, process state |
+| `@fencier/cli` | Commands, Git collection, local files, audits, orchestration | Duplicated policy semantics |
+| `@fencier/adapters` | Codex-first and compatibility instruction templates | File writes, policy evaluation |
+| `@fencier/codex-kit` | Versioned prompts, checklists, and skill content | Repository inspection, model calls, file writes |
 
-- `@fencier/core` has no filesystem access.
-- `@fencier/adapters` owns instruction templates but does not write files.
-- `@fencier/codex-kit` owns prompts, checklists, and skill text but does not inspect repositories.
-- `@fencier/cli` owns local orchestration.
+This split keeps policy decisions unit-testable and makes every report traceable back to structured inputs.
+
+## Command reference
+
+| Command | Purpose |
+|---|---|
+| `fencier init --codex` | Initialize policy, audit workspace, and the Codex adapter |
+| `fencier doctor` | Check that the CLI is wired correctly |
+| `fencier codex prepare` | Check policy, adapter, local skills, and latest audit readiness |
+| `fencier codex brief` | Print deterministic repository context for Codex |
+| `fencier codex runbook <id>` | Compose a complete task runbook |
+| `fencier codex prompt list\|show` | Inspect versioned prompt templates |
+| `fencier codex checklist list\|show` | Inspect task checklists |
+| `fencier codex skill list\|show\|install` | Inspect and install repository-local skills |
+| `fencier verify` | Evaluate the current diff and write configured audits |
+| `fencier check` | Compatibility alias for `verify` |
+| `fencier audit list` | List local audit reports |
+| `fencier audit show latest` | Print the latest Markdown audit |
+| `fencier adapters list\|install` | Inspect or install agent instruction adapters |
+
+Run `fencier <command> --help` for command-specific options.
+
+## Security and privacy
+
+Fencier is local-first by design:
+
+- no account or hosted backend;
+- no telemetry by default;
+- no source code, diff, policy, or audit upload;
+- possible secrets are shown as masked previews;
+- full patches are excluded from audits by default;
+- all decisions are derived from local policy and local Git state.
+
+Fencier is a boundary verifier, not a complete secret scanner or security analyzer. Human review remains required, especially for authentication, payments, CI/CD, migrations, and infrastructure changes. See the [security model](docs/security.md) for the complete contract.
+
+## What Fencier is not
+
+- An AI coding agent or model wrapper
+- A proof that code is correct or secure
+- A replacement for tests or human review
+- A full SAST or secret-scanning suite
+- A SaaS dashboard, CI platform, or telemetry service
+
+These boundaries are deliberate. Fencier stays useful by remaining small, deterministic, and explainable.
 
 ## Development
 
@@ -290,7 +310,7 @@ pnpm run ci
 pnpm run pack:cli
 ```
 
-Run the CLI from source after building:
+Run the built CLI without linking it globally:
 
 ```bash
 node packages/cli/dist/index.js doctor
@@ -298,54 +318,38 @@ node packages/cli/dist/index.js codex prepare
 node packages/cli/dist/index.js verify --no-audit
 ```
 
-For local development, link the CLI:
+The repository currently contains 45 tests across the policy engine, Git collection, initialization, audits, adapters, skills, runbooks, and CLI behavior.
 
-```bash
-cd packages/cli
-npm link
-```
+## Project status
 
-Then from the repository root:
+Implemented today:
 
-```bash
-fencier doctor
-fencier codex prepare
-fencier verify --no-audit
-```
-
-## Status
-
-Fencier is early-stage and local-first.
-
-Implemented:
-
-- deterministic diff verification
-- local audit reports
-- Codex `AGENTS.md` adapter
-- compatibility adapter templates
-- Codex prompts, checklists, and local skills
-- Codex runbooks and readiness checks
-- idempotent initialization
-- local CLI packaging check
-- GitHub Actions CI
+- deterministic local diff verification;
+- Markdown and JSON audit reports;
+- Codex `AGENTS.md` integration;
+- versioned prompts, checklists, and local skill material;
+- implementation, bugfix, review, refactor, security, and audit-fix runbooks;
+- compatibility adapters for Claude Code, Cursor, and GitHub Copilot;
+- idempotent repository initialization;
+- local CLI packaging validation and GitHub Actions CI.
 
 Not implemented yet:
 
-- npm publication
-- global Codex skill installation
-- richer benchmark suite
-- policy rule plugins
+- npm publication;
+- global Codex skill installation;
+- policy rule plugins;
+- a richer fixture-based benchmark suite.
 
 ## Documentation
 
 - [Architecture](docs/architecture.md)
 - [Codex Kit](docs/codex-kit.md)
-- [Deterministic Verifier](docs/deterministic-verifier.md)
-- [Policy Model](docs/policy-model.md)
-- [Quality Bar](docs/quality-bar.md)
-- [Release](docs/release.md)
+- [Deterministic verifier](docs/deterministic-verifier.md)
+- [Policy model](docs/policy-model.md)
 - [Security](docs/security.md)
+- [Quality bar](docs/quality-bar.md)
+- [Release process](docs/release.md)
 
 ## License
 
-MIT
+Fencier is available under the [MIT License](LICENSE).

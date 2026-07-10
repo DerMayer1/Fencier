@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">Fencier Codex prepare terminal output</title><desc id="desc">A terminal window showing a repository ready for a Fencier-governed Codex session.</desc>
+  <rect width="960" height="560" rx="18" fill="#0d1117"/><rect width="960" height="52" rx="18" fill="#161b22"/><rect y="34" width="960" height="18" fill="#161b22"/>
+  <circle cx="28" cy="26" r="7" fill="#ff5f56"/><circle cx="52" cy="26" r="7" fill="#ffbd2e"/><circle cx="76" cy="26" r="7" fill="#27c93f"/>
+  <text x="480" y="32" text-anchor="middle" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="14">fencier codex prepare</text>
+  <g font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="20">
+    <text x="34" y="94" fill="#8b949e">$</text><text x="58" y="94" fill="#f0f6fc">fencier codex prepare</text><text x="34" y="142" fill="#79c0ff" font-weight="700">Fencier Codex Prepare</text>
+    <text x="34" y="188" fill="#8b949e">Repository:</text><text x="178" y="188" fill="#f0f6fc">~/project</text>
+    <text x="34" y="224" fill="#8b949e">Policy:</text><text x="178" y="224" fill="#3fb950">OK</text><text x="214" y="224" fill="#f0f6fc">(fencier.yaml v1)</text>
+    <text x="34" y="260" fill="#8b949e">Codex adapter:</text><text x="214" y="260" fill="#3fb950">OK</text><text x="250" y="260" fill="#f0f6fc">(AGENTS.md)</text>
+    <text x="34" y="296" fill="#8b949e">Local skills:</text><text x="214" y="296" fill="#3fb950">4/4 installed</text><text x="34" y="332" fill="#8b949e">Latest audit:</text><text x="214" y="332" fill="#3fb950">FOUND</text>
+    <rect x="30" y="366" width="900" height="1" fill="#30363d"/><text x="34" y="414" fill="#8b949e">Status:</text><text x="130" y="414" fill="#3fb950" font-weight="700">READY</text>
+    <text x="34" y="462" fill="#d2a8ff" font-weight="700">Next</text><text x="34" y="500" fill="#8b949e">›</text><text x="58" y="500" fill="#f0f6fc">fencier codex runbook implementation</text>
+  </g>
+</svg>

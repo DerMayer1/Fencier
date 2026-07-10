@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">Fencier verification terminal output</title><desc id="desc">A terminal window showing a passing Fencier verification with low risk and no findings.</desc>
+  <rect width="960" height="560" rx="18" fill="#0d1117"/><rect width="960" height="52" rx="18" fill="#161b22"/><rect y="34" width="960" height="18" fill="#161b22"/>
+  <circle cx="28" cy="26" r="7" fill="#ff5f56"/><circle cx="52" cy="26" r="7" fill="#ffbd2e"/><circle cx="76" cy="26" r="7" fill="#27c93f"/>
+  <text x="480" y="32" text-anchor="middle" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="14">fencier verify</text>
+  <g font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="20">
+    <text x="34" y="94" fill="#8b949e">$</text><text x="58" y="94" fill="#f0f6fc">fencier verify</text><text x="34" y="142" fill="#79c0ff" font-weight="700">Fencier Verification</text>
+    <text x="34" y="194" fill="#8b949e">Status:</text><rect x="132" y="169" width="86" height="34" rx="17" fill="#173d24"/><text x="175" y="193" text-anchor="middle" fill="#56d364" font-weight="700">PASS</text>
+    <text x="34" y="240" fill="#8b949e">Risk:</text><text x="132" y="240" fill="#3fb950">LOW</text><text x="34" y="280" fill="#8b949e">Score:</text><text x="132" y="280" fill="#f0f6fc">0</text>
+    <rect x="30" y="316" width="900" height="1" fill="#30363d"/><text x="34" y="366" fill="#8b949e">Changed files:</text><text x="226" y="366" fill="#f0f6fc">0</text>
+    <text x="34" y="406" fill="#8b949e">Changed lines:</text><text x="226" y="406" fill="#3fb950">+0</text><text x="264" y="406" fill="#f85149">-0</text>
+    <text x="34" y="464" fill="#d2a8ff" font-weight="700">Policy findings</text><text x="34" y="504" fill="#3fb950">✓</text><text x="66" y="504" fill="#f0f6fc">None</text>
+  </g>
+</svg>
