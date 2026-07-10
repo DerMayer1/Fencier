@@ -27,7 +27,7 @@ importers:
   packages/adapters: {}
 
   packages/cli:
-    dependencies:
+    devDependencies:
       '@fencier/adapters':
         specifier: workspace:*
         version: link:../adapters
@@ -40,7 +40,6 @@ importers:
       commander:
         specifier: ^12.1.0
         version: 12.1.0
-    devDependencies:
       tsx:
         specifier: ^4.19.2
         version: 4.23.0

@@ -7,17 +7,15 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean",
+    "build": "tsup",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
-  "dependencies": {
+  "devDependencies": {
     "@fencier/adapters": "workspace:*",
     "@fencier/codex-kit": "workspace:*",
     "@fencier/core": "workspace:*",
-    "commander": "^12.1.0"
-  },
-  "devDependencies": {
+    "commander": "^12.1.0",
     "tsx": "^4.19.2"
   }
 }
